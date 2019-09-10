@@ -347,24 +347,19 @@ ESX.RegisterServerCallback('esx_property:getPropertyInventory', function(source,
 	local blackMoney = 0
 	local items      = {}
 	local weapons    = {}
-
 	TriggerEvent('esx_addonaccount:getAccount', 'property_black_money', xPlayer.identifier, function(account)
-		blackMoney = account.money
+    	blackMoney = account.money
+		TriggerEvent('esx_addoninventory:getInventory', 'property', xPlayer.identifier, function(inventory)
+			items = inventory.items
+			TriggerEvent('esx_datastore:getDataStore', 'property', xPlayer.identifier, function(store)
+				weapons = store.get('weapons') or {}
+				cb({
+					blackMoney      = blackMoney,
+					items           = items,
+					weapons         = weapons })
+			end)
+		end)
 	end)
-
-	TriggerEvent('esx_addoninventory:getInventory', 'property', xPlayer.identifier, function(inventory)
-		items = inventory.items
-	end)
-
-	TriggerEvent('esx_datastore:getDataStore', 'property', xPlayer.identifier, function(store)
-		weapons = store.get('weapons') or {}
-	end)
-
-	cb({
-		blackMoney = blackMoney,
-		items      = items,
-		weapons    = weapons
-	})
 end)
 
 ESX.RegisterServerCallback('esx_property:getPlayerInventory', function(source, cb)
